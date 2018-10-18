@@ -135,8 +135,16 @@ class Session(object):
             if self.environ.get('HTTP_COOKIE') is None:
                 return #no cookies
 
-            #cookie = SimpleCookie(os.environ['HTTP_COOKIE'])
-            cookie = SimpleCookie(self.environ.get('HTTP_COOKIE'))
+            # cookie = SimpleCookie(os.environ['HTTP_COOKIE'])
+            # cookie_temp = self.environ.get('HTTP_COOKIE', '').split('; ')
+            # cookie = SimpleCookie(self.environ.get('HTTP_COOKIE'))
+            cookie = SimpleCookie()
+            for bit in self.environ.get('HTTP_COOKIE', '').split('; '):
+                try:
+                    cookie.load(bit)
+                except CookieError:
+                    pass
+
             self.cookie_keys = filter(is_mole_sessions_key, cookie.keys())
             if not self.cookie_keys:
                 return  # no session
@@ -570,6 +578,7 @@ def authenticator(login_url = '/login'):
                 except (KeyError, TypeError, AttributeError):
                     next = request.path
                     _url = '%s?next=%s'%(login_url, next)
+                    # _url = '%s'%(next)
                     redirect(_url)
                 return handler(*a, **ka)
             return check_auth
