@@ -1,4 +1,4 @@
-PyRedisAdmin
+PyRedisAdmin(python2.x)
 ============
 
 A web GUI for Redis data management
